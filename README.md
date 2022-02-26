@@ -18,9 +18,7 @@ Simply download a binary from the release section of this repo.
 ### From source
 
 ```shell
-git clone git@github.com:KMikeeU/hcre-rs.git
-cd hcre-rs 
-cargo build --release
+cargo install --git https://github.com/KMikeeU/hcre-rs
 ```
 
 ## Usage
