@@ -1,6 +1,7 @@
 
-
 # Hashcat Rule Engine
+
+[![Build (Release)](https://github.com/KMikeeU/hcre-rs/actions/workflows/release.yml/badge.svg)](https://github.com/KMikeeU/hcre-rs/actions/workflows/release.yml)
 
 ***This is a standalone third-party app not affiliated with hashcat.***
 
