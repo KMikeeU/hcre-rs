@@ -75,6 +75,8 @@ fn main() {
                     'r' => { Some(Rule::Reverse()) },
                     'd' => { Some(Rule::Duplicate()) },
                     '@' => { Some(Rule::Purge(rule_reader.read().unwrap())) },
+                    '{' => { Some(Rule::RotateLeft()) },
+                    '}' => { Some(Rule::RotateRight()) },
                     '\n' => { rules.push(mangler); mangler = Vec::new(); None },
                     '\r' | ' ' | '\t' => { None },
                     _ => { eprintln!("Rule {} not implemented!", c); None }
@@ -94,12 +96,13 @@ fn main() {
     }
 
     // Applying compiled rules to stdin
-    let stdin = io::stdin();
-
     // For every line in the input
-    for line in stdin.lock().lines() {
+    for line in io::stdin().lock().lines() {
         // For every rule / every line in the rule file
         let line = line.unwrap();
+        // Required on windows cmd, not implemented
+        // let line = line.trim_end();
+
         let mut line_out = HashSet::new();
 
         for rule in &rules {
@@ -137,6 +140,12 @@ fn main() {
                     },
                     Rule::Purge(c) => {
                         out = out.replace(*c, "");
+                    },
+                    Rule::RotateLeft() => {
+                        out = out.chars().skip(1).chain(out.chars().take(1)).collect();
+                    },
+                    Rule::RotateRight() => {
+                        out = out.chars().rev().take(1).chain(out.chars().take(out.chars().count() - 1)).collect();
                     }
                     Rule::Nothing => { }
                 };

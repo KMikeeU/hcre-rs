@@ -22,7 +22,9 @@ pub enum Rule{
     InvertCapitalize(),
     Reverse(),
     Duplicate(),
-    Purge(char)
+    Purge(char),
+    RotateLeft(),
+    RotateRight()
 }
 
 
