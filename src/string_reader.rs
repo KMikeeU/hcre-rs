@@ -11,7 +11,7 @@ impl StringReader {
 
     pub fn new(string: Vec<char>) -> StringReader {
         StringReader {
-            string: string,
+            string,
             index: 0
         }
     }
@@ -23,6 +23,29 @@ impl StringReader {
         let c = self.string[self.index];
         self.index += 1;
         Ok(c)
+    }
+
+    pub fn read_usize(&mut self) -> Result<usize, &str> {
+        let c = self.read()?
+            .to_digit(35)
+            .ok_or("Failed to parse digit")?;
+        usize::try_from(c).map_err(|_| "Failed to convert digit to usize")
+    }
+
+    pub fn skip_line(&mut self) -> Result<(), &str> {
+        loop {
+            match self.read() {
+                Ok(c) => {
+                    if c == '\n' {
+                        break;
+                    }
+                },
+                Err(_) => {
+                    break;
+                }
+            }
+        }
+        Ok(())
     }
 
     // Unneeded code, might be required later on
