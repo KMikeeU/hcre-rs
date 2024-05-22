@@ -292,20 +292,25 @@ fn main() {
                     Rule::Capitalize() => {
                         // Thank you stackoverflow!
                         let mut temp: Vec<char> = out.chars().collect();
-                        temp[0] = temp[0].to_uppercase().next().unwrap();
-                        out = temp.into_iter().collect();
+
+                        if temp.len() > 0 {
+                            temp[0] = temp[0].to_uppercase().next().unwrap();
+                            out = temp.into_iter().collect();
+                        }
                     },
                     Rule::InvertCapitalize() => {
-                        let mut temp: Vec<char> = out.to_uppercase().chars().collect();
-                        temp[0] = temp[0].to_lowercase().next().unwrap();
-                        out = temp.into_iter().collect();
+                        if out.len() > 0 {
+                            let mut temp: Vec<char> = out.to_uppercase().chars().collect();
+                            temp[0] = temp[0].to_lowercase().next().unwrap();
+                            out = temp.into_iter().collect();
+                        }
                     },
                     Rule::Duplicate() => {
                         let tmp = out.clone();
                         out.push_str(&tmp);
                     },
                     Rule::Reverse() => {
-                        out = out.chars().rev().collect::<String>();
+                        out = out.chars().rev().collect();
                     },
                     Rule::Purge(c) => {
                         out = out.replace(*c, "");
@@ -314,28 +319,31 @@ fn main() {
                         out = out.chars().skip(1).chain(out.chars().take(1)).collect();
                     },
                     Rule::RotateRight() => {
-                        out = out.chars().rev().take(1).chain(out.chars().take(out.chars().count() - 1)).collect();
+                        if out.chars().count() > 0 {
+                            out = out.chars().rev().take(1).chain(out.chars().take(out.chars().count() - 1)).collect();
+                        }
                     }
                     Rule::Nothing => { }
                     Rule::ToggleCase() => {
                         out = out.chars().map(|c| {
                             if c.is_lowercase() {
-                                c.to_uppercase().next().unwrap()
+                                c.to_uppercase().collect::<String>()
                             } else {
-                                c.to_lowercase().next().unwrap()
+                                c.to_lowercase().collect::<String>()
                             }
                         }).collect();
                     },
                     Rule::ToggleAt(pos) => {
+                        // TODO: Refactor this
                         out = out.chars().enumerate().map(|(i, c)| {
                             if i == *pos {
                                 if c.is_lowercase() {
-                                    c.to_uppercase().next().unwrap()
+                                    c.to_uppercase().collect()
                                 } else {
-                                    c.to_lowercase().next().unwrap()
+                                    c.to_lowercase().collect()
                                 }
                             } else {
-                                c
+                                c.to_string()
                             }
                         }).collect();
                     },
@@ -347,18 +355,20 @@ fn main() {
                         out = tmp;
                     },
                     Rule::Reflect() => {
-                        let mut tmp = out.clone();
-                        tmp.push_str(&out.chars().rev().collect::<String>());
-                        out = tmp;
+                        out.push_str(&out.chars().rev().collect::<String>());
                     },
                     Rule::TruncateLeft() => {
                         out = out.chars().skip(1).collect();
                     },
                     Rule::TruncateRight() => {
-                        out = out.chars().take(out.chars().count() - 1).collect();
+                        if out.chars().count() > 0 {
+                            out = out.chars().take(out.chars().count() - 1).collect();
+                        }
                     },
                     Rule::DeleteAt(pos) => {
-                        out = out.chars().enumerate().filter(|(i, _)| i != pos).map(|(_, c)| c).collect();
+                        if out.len() > *pos {
+                            out = out.chars().enumerate().filter(|(i, _)| i != pos).map(|(_, c)| c).collect();
+                        }
                     },
                     Rule::ExtractRange(pos, count) => {
                         out = out.chars().enumerate().filter(|(i, _)| i >= pos && i < &(pos + count)).map(|(_, c)| c).collect();
@@ -391,30 +401,34 @@ fn main() {
                         out = out.chars().enumerate().filter(|(i, _)| i < pos).map(|(_, c)| c).collect();
                     },
                     Rule::DuplicateFirstN(n) => {
-                        let mut tmp = String::new();
-                        for _ in 0..*n {
-                            tmp.push(out.chars().next().unwrap());
+                        if &out.len() > n {
+                            let mut tmp = String::new();
+                            for _ in 0..*n {
+                                tmp.push(out.chars().next().unwrap());
+                            }
+                            tmp.push_str(&out);
+                            out = tmp;
                         }
-                        tmp.push_str(&out);
-                        out = tmp;
                     },
                     Rule::DuplicateLastN(n) => {
-                        let mut tmp = String::new();
-                        tmp.push_str(&out);
-                        for _ in 0..*n {
-                            tmp.push(out.chars().last().unwrap());
+                        if &out.len() > n {
+                            let mut tmp = String::new();
+                            tmp.push_str(&out);
+                            for _ in 0..*n {
+                                tmp.push(out.chars().last().unwrap());
+                            }
+                            out = tmp;
                         }
-                        out = tmp;
                     },
                     Rule::DuplicateAll() => {
-                        let mut tmp = String::new();
-                        for c in out.chars() {
+                        let mut tmp = String::with_capacity(out.len() * 2);
+                        out.chars().for_each(|c| {
                             tmp.push(c);
                             tmp.push(c);
-                        }
+                        });
                         out = tmp;
                     },
-                    Rule::Invalid(_) => todo!(),
+                    Rule::Invalid(_) => todo!("Unknown/Invalid rule"),
                 };
 
             }

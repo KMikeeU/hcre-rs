@@ -7,8 +7,6 @@
 
 A simple cli tool to parse hashcat rules provided as command line arguments, apply the rules to stdin and output to stdout.
 
-***Note:*** This is a rust port of [my other repo](https://github.com/KMikeeU/hcre).
-The rust version should be a lot faster, albeit not implementing as many rules as of now.
 
 ## Installation
 
@@ -40,17 +38,34 @@ cat directory-list.txt | hcre-rs -r example.rule | gobuster dir -u http://localh
 
 **NOTE**: Rules which have not yet been implemented will be ignored
 
-- Nothing (**:**)
-- Lowercase (**l**)
-- Uppercase (**u**)
-- Capitalize (**c**)
-- Invert Capitalize (**C**)
-- Reverse (**r**)
-- Duplicate (**d**)
-- Append Character (**$X**)
-- Prepend Character (**^X**)
-- Purge (**@X**)
-- Replace Character (**sXY**)
+- Nothing (`:`)
+- Lowercase (`l`)
+- Uppercase (`u`)
+- Capitalize (`c`)
+- Invert Capitalize (`C`)
+- Toggle Case (`t`)
+- Toggle @ (`TN`)
+- Reverse (`r`)
+- Duplicate (`d`)
+- Duplicate N (`pN`)
+- Refect (`f`)
+- Rotate Left (`{`)
+- Rotate Right (`}`)
+- Append Character (`$X`)
+- Prepend Character (`^X`)
+- Truncate left (`[`)
+- Truncate right (`]`)
+- Delete @ N (`DN`)
+- Extract range (`xNM`)
+- Omit range (`ONM`)
+- Insert @ N (`iNX`)
+- Overwrite @ N (`oNX`)
+- Truncate @ N (`'N`)
+- Replace (`sXY`)
+- Purge (`@X`)
+- Duplicate first N (`zN`)
+- Duplicate last N (`ZN`)
+- Duplicate all (`q`)
 
 To see how any of these rules function, please refer to the official [hashcat rule documentation](https://hashcat.net/wiki/doku.php?id=rule_based_attack#implemented_compatible_functions).
 
@@ -58,4 +73,7 @@ To see how any of these rules function, please refer to the official [hashcat ru
 ## Known issues
 
 1. Always outputs initial word without rules (as if the ':' rule was applied)
-2. Not enough rules. duh.
+2. Missing rules
+   1. Memory rules
+   2. Reject rules
+   3. hashcat specific rules/functions
